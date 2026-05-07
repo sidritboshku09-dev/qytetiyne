@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QytetiYnë</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; color: #222; }
@@ -128,6 +129,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+emailjs.init("VsleY6nsIQRNQWwCu");
+
 const firebaseConfig = {
   apiKey: "AIzaSyB6nDJ1X3efuqeX0-t-9NAODfjD3AYghbc",
   authDomain: "qytetiyne.firebaseapp.com",
@@ -141,8 +144,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
-const FORMSPREE_URL = "https://formspree.io/f/xnjwzoyr";
 
 const CATS = [
   {v:'Gropë në rrugë',ic:'🕳️',bg:'#FAECE7'},{v:'Dritë e prishur',ic:'💡',bg:'#FAEEDA'},
@@ -227,28 +228,21 @@ window.submitReport = async function() {
   btn.disabled = true;
   btn.textContent = 'Duke dërguar...';
 
-  const reportData = {
-    cat: selCat, loc, zone, desc, pri,
-    status: 'hapur',
-    date: new Date().toLocaleDateString('sq-AL'),
-    createdAt: Date.now()
-  };
-
   try {
-    await addDoc(collection(db,'raportet'), reportData);
+    await addDoc(collection(db,'raportet'), {
+      cat: selCat, loc, zone, desc, pri,
+      status: 'hapur',
+      date: new Date().toLocaleDateString('sq-AL'),
+      createdAt: Date.now()
+    });
 
-    await fetch(FORMSPREE_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        subject: `🏙️ Raport i ri: ${selCat}`,
-        kategoria: selCat,
-        vendndodhja: loc,
-        rrethi: zone || 'Pa specifikuar',
-        pershkrimi: desc || 'Pa përshkrim',
-        prioriteti: pri,
-        data: new Date().toLocaleDateString('sq-AL')
-      })
+    await emailjs.send("service_17i5cif", "template_ynpz7k9", {
+      kategoria: selCat,
+      vendndodhja: loc,
+      rrethi: zone || 'Pa specifikuar',
+      pershkrimi: desc || 'Pa përshkrim',
+      prioriteti: pri,
+      data: new Date().toLocaleDateString('sq-AL')
     });
 
     document.getElementById('inp-loc').value='';
@@ -268,6 +262,7 @@ window.submitReport = async function() {
     }, 3000);
 
   } catch(e) {
+    console.error(e);
     showToast('Gabim! Provo përsëri.');
     btn.disabled=false;
     btn.textContent='Dërgo raportin';
