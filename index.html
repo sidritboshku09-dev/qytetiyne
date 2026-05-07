@@ -26,8 +26,9 @@
   .cat-btn:hover { background: #f0fdf8; }
   .cat-btn.selected { border-color: #1D9E75; background: #e1f5ee; color: #085041; font-weight: 500; }
   .cat-btn .ic { font-size: 22px; }
-  .submit-btn { width: 100%; margin-top: 16px; padding: 12px; background: #1D9E75; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 500; cursor: pointer; }
+  .submit-btn { width: 100%; margin-top: 16px; padding: 12px; background: #1D9E75; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 500; cursor: pointer; transition: background .15s; }
   .submit-btn:hover { background: #0F6E56; }
+  .submit-btn:disabled { background: #9FE1CB; cursor: default; }
   .report-card { background: white; border-radius: 12px; border: 1px solid #e8e8e8; padding: 14px; margin-bottom: 10px; display: flex; gap: 12px; align-items: flex-start; }
   .report-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
   .report-info { flex: 1; }
@@ -54,6 +55,9 @@
   .bar-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
   .bar-bg { background: #f0f0f0; border-radius: 4px; height: 8px; }
   .bar-fill { height: 100%; background: #1D9E75; border-radius: 4px; }
+  .success-msg { background: #E1F5EE; border-radius: 10px; padding: 16px; text-align: center; margin-top: 12px; display: none; }
+  .success-msg .ic { font-size: 32px; margin-bottom: 8px; }
+  .success-msg p { font-size: 14px; color: #085041; font-weight: 500; }
 </style>
 </head>
 <body>
@@ -66,19 +70,22 @@
   <div class="tab" onclick="sw('lista')">Lista</div>
   <div class="tab" onclick="sw('statistika')">Statistika</div>
 </div>
+
 <div id="s-raporto" class="section active">
   <div class="card">
     <label>Lloji i problemit</label>
     <div class="cat-grid" id="cat-grid"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div><label>Prioriteti</label>
+      <div>
+        <label>Prioriteti</label>
         <select id="inp-pri">
           <option value="i lartë">I lartë</option>
           <option value="mesatar" selected>Mesatar</option>
           <option value="i ulët">I ulët</option>
         </select>
       </div>
-      <div><label>Rrethi / Lagja</label>
+      <div>
+        <label>Rrethi / Lagja</label>
         <select id="inp-zone">
           <option value="">— Zgjidh —</option>
           <option>Blloku</option><option>Kombinat</option><option>Kinostudio</option>
@@ -92,13 +99,19 @@
     <input id="inp-loc" type="text" placeholder="p.sh. Rruga Dëshmorët e Kombit, nr. 12">
     <label>Përshkrim (opsional)</label>
     <textarea id="inp-desc" placeholder="Detaje shtesë rreth problemit..."></textarea>
-    <button class="submit-btn" onclick="submitReport()">Dërgo raportin</button>
+    <button class="submit-btn" id="sub-btn" onclick="submitReport()">Dërgo raportin</button>
+    <div class="success-msg" id="success-msg">
+      <div class="ic">✅</div>
+      <p>Raporti u dërgua me sukses!<br>Do të njoftohemi menjëherë.</p>
+    </div>
   </div>
 </div>
+
 <div id="s-lista" class="section">
   <div class="filter-row" id="frow"></div>
   <div id="list-el"><div class="loading">Duke ngarkuar...</div></div>
 </div>
+
 <div id="s-statistika" class="section">
   <div class="stats-grid">
     <div class="stat-box"><div class="stat-num" id="st-tot">0</div><div class="stat-lbl">Gjithsej</div></div>
@@ -108,10 +121,13 @@
   </div>
   <div class="card" id="cat-st"></div>
 </div>
+
 <div class="toast" id="toast"></div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyB6nDJ1X3efuqeX0-t-9NAODfjD3AYghbc",
   authDomain: "qytetiyne.firebaseapp.com",
@@ -122,8 +138,12 @@ const firebaseConfig = {
   appId: "1:786171527486:web:2fd9b22e0beb712f0b6c6f",
   measurementId: "G-9LFY9WF9H9"
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+const FORMSPREE_URL = "https://formspree.io/f/xnjwzoyr";
+
 const CATS = [
   {v:'Gropë në rrugë',ic:'🕳️',bg:'#FAECE7'},{v:'Dritë e prishur',ic:'💡',bg:'#FAEEDA'},
   {v:'Mbeturina',ic:'🗑️',bg:'#EAF3DE'},{v:'Ujë / Energji',ic:'🔧',bg:'#E6F1FB'},
@@ -132,54 +152,159 @@ const CATS = [
   {v:'Zhurmë',ic:'🔊',bg:'#FBEAF0'},{v:'Kanalizime',ic:'🪠',bg:'#FAECE7'},
   {v:'Parkim i paligjshëm',ic:'🚗',bg:'#E6F1FB'},{v:'Ndërtim i paligjshëm',ic:'🏗️',bg:'#FCEBEB'},
 ];
-let selCat='',curFilter='të gjitha',allReports=[];
-const getIcon=v=>(CATS.find(c=>c.v===v)||{ic:'📌'}).ic;
-const getBg=v=>(CATS.find(c=>c.v===v)||{bg:'#f0f0f0'}).bg;
-function buildCatGrid(){
-  document.getElementById('cat-grid').innerHTML=CATS.map(c=>
+
+let selCat='', curFilter='të gjitha', allReports=[];
+const getIcon = v => (CATS.find(c=>c.v===v)||{ic:'📌'}).ic;
+const getBg = v => (CATS.find(c=>c.v===v)||{bg:'#f0f0f0'}).bg;
+
+function buildCatGrid() {
+  document.getElementById('cat-grid').innerHTML = CATS.map(c =>
     `<button class="cat-btn" onclick="selC(this,'${c.v}')"><span class="ic">${c.ic}</span><span>${c.v}</span></button>`
   ).join('');
 }
-window.selC=function(btn,val){document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');selCat=val;};
-window.sw=function(t){['raporto','lista','statistika'].forEach((n,i)=>{document.querySelectorAll('.tab')[i].classList.toggle('active',n===t);document.getElementById('s-'+n).classList.toggle('active',n===t);});if(t==='statistika')renderStats();};
-function buildFilters(){document.getElementById('frow').innerHTML=['të gjitha','hapur','në proces','zgjidhur'].map(o=>`<button class="fbtn${o===curFilter?' active':''}" onclick="setF(this,'${o}')">${o.charAt(0).toUpperCase()+o.slice(1)}</button>`).join('');}
-window.setF=function(btn,f){curFilter=f;buildFilters();renderList();};
-function statusClass(s){return s==='hapur'?'s-hapur':s==='në proces'?'s-proces':'s-zgjidhur';}
-function renderList(){
-  buildFilters();
-  const el=document.getElementById('list-el');
-  let data=curFilter==='të gjitha'?allReports:allReports.filter(r=>r.status===curFilter);
-  if(!data.length){el.innerHTML='<div class="empty">Nuk ka raporte.</div>';return;}
-  el.innerHTML=data.map(r=>`<div class="report-card"><div class="report-icon" style="background:${getBg(r.cat)}">${getIcon(r.cat)}</div><div class="report-info"><div class="report-title">${r.cat}</div><div class="report-loc">${r.zone?r.zone+' · ':''}${r.loc}${r.desc?' · '+r.desc:''}</div><div class="report-footer"><button class="status-badge ${statusClass(r.status)}" onclick="cycleS('${r.id}','${r.status}')">${r.status}</button><span class="report-date">${r.date}</span></div></div></div>`).join('');
-}
-window.cycleS=async function(id,current){const cycle=['hapur','në proces','zgjidhur'];await updateDoc(doc(db,'raportet',id),{status:cycle[(cycle.indexOf(current)+1)%3]});};
-window.submitReport=async function(){
-  const loc=document.getElementById('inp-loc').value.trim();
-  const zone=document.getElementById('inp-zone').value;
-  const desc=document.getElementById('inp-desc').value.trim();
-  const pri=document.getElementById('inp-pri').value;
-  if(!selCat){showToast('Zgjidhni llojin e problemit!');return;}
-  if(!loc){showToast('Shkruani vendndodhjen!');return;}
-  await addDoc(collection(db,'raportet'),{cat:selCat,loc,zone,desc,pri,status:'hapur',date:new Date().toLocaleDateString('sq-AL'),createdAt:Date.now()});
-  document.getElementById('inp-loc').value='';document.getElementById('inp-desc').value='';document.getElementById('inp-zone').value='';document.getElementById('inp-pri').value='mesatar';
-  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('selected'));selCat='';
-  showToast('Raporti u dërgua! ✓');
+
+window.selC = function(btn, val) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selCat = val;
 };
-function renderStats(){
+
+window.sw = function(t) {
+  ['raporto','lista','statistika'].forEach((n,i) => {
+    document.querySelectorAll('.tab')[i].classList.toggle('active', n===t);
+    document.getElementById('s-'+n).classList.toggle('active', n===t);
+  });
+  if(t==='statistika') renderStats();
+};
+
+function buildFilters() {
+  document.getElementById('frow').innerHTML = ['të gjitha','hapur','në proces','zgjidhur'].map(o =>
+    `<button class="fbtn${o===curFilter?' active':''}" onclick="setF(this,'${o}')">${o.charAt(0).toUpperCase()+o.slice(1)}</button>`
+  ).join('');
+}
+
+window.setF = function(btn, f) { curFilter=f; buildFilters(); renderList(); };
+
+function statusClass(s) {
+  return s==='hapur'?'s-hapur':s==='në proces'?'s-proces':'s-zgjidhur';
+}
+
+function renderList() {
+  buildFilters();
+  const el = document.getElementById('list-el');
+  let data = curFilter==='të gjitha' ? allReports : allReports.filter(r=>r.status===curFilter);
+  if(!data.length) { el.innerHTML='<div class="empty">Nuk ka raporte.</div>'; return; }
+  el.innerHTML = data.map(r => `
+    <div class="report-card">
+      <div class="report-icon" style="background:${getBg(r.cat)}">${getIcon(r.cat)}</div>
+      <div class="report-info">
+        <div class="report-title">${r.cat}</div>
+        <div class="report-loc">${r.zone?r.zone+' · ':''}${r.loc}${r.desc?' · '+r.desc:''}</div>
+        <div class="report-footer">
+          <button class="status-badge ${statusClass(r.status)}" onclick="cycleS('${r.id}','${r.status}')">${r.status}</button>
+          <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:#f0f0f0;color:#666">${r.pri||'mesatar'}</span>
+          <span class="report-date">${r.date}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+window.cycleS = async function(id, current) {
+  const cycle = ['hapur','në proces','zgjidhur'];
+  await updateDoc(doc(db,'raportet',id), {status: cycle[(cycle.indexOf(current)+1)%3]});
+};
+
+window.submitReport = async function() {
+  const loc = document.getElementById('inp-loc').value.trim();
+  const zone = document.getElementById('inp-zone').value;
+  const desc = document.getElementById('inp-desc').value.trim();
+  const pri = document.getElementById('inp-pri').value;
+
+  if(!selCat) { showToast('Zgjidhni llojin e problemit!'); return; }
+  if(!loc) { showToast('Shkruani vendndodhjen!'); return; }
+
+  const btn = document.getElementById('sub-btn');
+  btn.disabled = true;
+  btn.textContent = 'Duke dërguar...';
+
+  const reportData = {
+    cat: selCat, loc, zone, desc, pri,
+    status: 'hapur',
+    date: new Date().toLocaleDateString('sq-AL'),
+    createdAt: Date.now()
+  };
+
+  try {
+    await addDoc(collection(db,'raportet'), reportData);
+
+    await fetch(FORMSPREE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        subject: `🏙️ Raport i ri: ${selCat}`,
+        kategoria: selCat,
+        vendndodhja: loc,
+        rrethi: zone || 'Pa specifikuar',
+        pershkrimi: desc || 'Pa përshkrim',
+        prioriteti: pri,
+        data: new Date().toLocaleDateString('sq-AL')
+      })
+    });
+
+    document.getElementById('inp-loc').value='';
+    document.getElementById('inp-desc').value='';
+    document.getElementById('inp-zone').value='';
+    document.getElementById('inp-pri').value='mesatar';
+    document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('selected'));
+    selCat='';
+
+    btn.style.display='none';
+    document.getElementById('success-msg').style.display='block';
+    setTimeout(()=>{
+      btn.style.display='block';
+      btn.disabled=false;
+      btn.textContent='Dërgo raportin';
+      document.getElementById('success-msg').style.display='none';
+    }, 3000);
+
+  } catch(e) {
+    showToast('Gabim! Provo përsëri.');
+    btn.disabled=false;
+    btn.textContent='Dërgo raportin';
+  }
+};
+
+function renderStats() {
   document.getElementById('st-tot').textContent=allReports.length;
   document.getElementById('st-op').textContent=allReports.filter(r=>r.status==='hapur').length;
   document.getElementById('st-pr').textContent=allReports.filter(r=>r.status==='në proces').length;
   document.getElementById('st-zg').textContent=allReports.filter(r=>r.status==='zgjidhur').length;
-  const cats={};allReports.forEach(r=>cats[r.cat]=(cats[r.cat]||0)+1);
+  const cats={};
+  allReports.forEach(r=>cats[r.cat]=(cats[r.cat]||0)+1);
   const el=document.getElementById('cat-st');
   if(!Object.keys(cats).length){el.innerHTML='<div class="empty">Nuk ka të dhëna akoma.</div>';return;}
   const mx=Math.max(...Object.values(cats));
-  el.innerHTML='<div style="font-size:13px;font-weight:500;color:#888;margin-bottom:14px">Sipas kategorisë</div>'+Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,cnt])=>`<div class="bar-wrap"><div class="bar-label"><span>${getIcon(cat)} ${cat}</span><span style="color:#888">${cnt}</span></div><div class="bar-bg"><div class="bar-fill" style="width:${Math.round(cnt/mx*100)}%"></div></div></div>`).join('');
+  el.innerHTML='<div style="font-size:13px;font-weight:500;color:#888;margin-bottom:14px">Sipas kategorisë</div>'+
+    Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,cnt])=>`
+      <div class="bar-wrap">
+        <div class="bar-label"><span>${getIcon(cat)} ${cat}</span><span style="color:#888">${cnt}</span></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(cnt/mx*100)}%"></div></div>
+      </div>`).join('');
 }
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-const q=query(collection(db,'raportet'),orderBy('createdAt','desc'));
-onSnapshot(q,snap=>{allReports=snap.docs.map(d=>({id:d.id,...d.data()}));renderList();renderStats();});
-buildCatGrid();buildFilters();
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+const q = query(collection(db,'raportet'), orderBy('createdAt','desc'));
+onSnapshot(q, snap => {
+  allReports = snap.docs.map(d=>({id:d.id,...d.data()}));
+  renderList(); renderStats();
+});
+
+buildCatGrid(); buildFilters();
 </script>
 </body>
 </html>
