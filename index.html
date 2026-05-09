@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QytetiYnë 🏙️</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>emailjs.init("VsleY6nsIQRNQWwCu");</script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; color: #333; }
@@ -29,7 +31,6 @@
   .priority label { flex: 1; text-align: center; padding: 10px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: .85rem; margin: 0; }
   .priority input[type=radio] { display: none; }
   .priority input:checked + label { border-color: #1a73e8; background: #e8f0fe; color: #1a73e8; }
-  .raportet-list { }
   .raport-card { background: white; border-radius: 10px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.07); border-left: 4px solid #1a73e8; }
   .raport-card h3 { font-size: 1rem; margin-bottom: 6px; }
   .raport-card p { font-size: .85rem; color: #666; margin-bottom: 3px; }
@@ -52,7 +53,6 @@
   <div class="tab" onclick="showTab('raportet')">📂 Raportet</div>
 </div>
 
-<!-- FORMA E RAPORTIMIT -->
 <div class="page active" id="raporto">
   <div class="card">
     <label>Kategoria</label>
@@ -83,25 +83,12 @@
     <label>Rrethi/Lagja</label>
     <select id="rrethi">
       <option value="">-- Zgjidh rrethин --</option>
-      <option>Blloku</option>
-      <option>Kombinat</option>
-      <option>Don Bosko</option>
-      <option>Fresku</option>
-      <option>Kinostudio</option>
-      <option>Laprakë</option>
-      <option>Mezez</option>
-      <option>Myslym Shyri</option>
-      <option>Pallati me Shigjeta</option>
-      <option>Pazari i Ri</option>
-      <option>Porcelani</option>
-      <option>Rruga e Elbasanit</option>
-      <option>Sauk</option>
-      <option>Selitë</option>
-      <option>Shëngjin</option>
-      <option>Tirana e Re</option>
-      <option>Unaza e Re</option>
-      <option>Vasil Shanto</option>
-      <option>Zogu i Zi</option>
+      <option>Blloku</option><option>Kombinat</option><option>Don Bosko</option>
+      <option>Fresku</option><option>Kinostudio</option><option>Laprakë</option>
+      <option>Mezez</option><option>Myslym Shyri</option><option>Pallati me Shigjeta</option>
+      <option>Pazari i Ri</option><option>Porcelani</option><option>Rruga e Elbasanit</option>
+      <option>Sauk</option><option>Selitë</option><option>Tirana e Re</option>
+      <option>Unaza e Re</option><option>Vasil Shanto</option><option>Zogu i Zi</option>
       <option>Tjeter</option>
     </select>
 
@@ -126,13 +113,15 @@
   </div>
 </div>
 
-<!-- LISTA E RAPORTEVE -->
 <div class="page" id="raportet">
   <div id="lista-raportet"><p class="empty">Duke ngarkuar raportet...</p></div>
 </div>
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzAnALey_A0UCpKKMXRD2uhgQR-xWwpx6dUMmq5tZw3AVBJZMxPkQ7306RniShavxXPqw/exec";
+const EMAILJS_SERVICE = "service_17i5cif";
+const EMAILJS_TEMPLATE = "template_ynpz7k9";
+
 let raportet = JSON.parse(localStorage.getItem("raportet") || "[]");
 
 function showTab(tab) {
@@ -158,29 +147,38 @@ async function dergoProblem() {
   btn.disabled = true;
   btn.textContent = "Duke dërguar...";
 
-  const data = {
-    data: new Date().toLocaleString("sq-AL"),
-    kategoria, rrethi, vendndodhja, prioriteti, pershkrimi
-  };
+  const data = new Date().toLocaleString("sq-AL");
 
-  // Ruaj lokalisht
-  raportet.unshift(data);
-  localStorage.setItem("raportet", JSON.stringify(raportet));
+  const payload = { data, kategoria, rrethi, vendndodhja, prioriteti, pershkrimi };
 
-  // Dergo te Google Sheets
+  // 1. Dergo te Google Sheets
   try {
     await fetch(SCRIPT_URL, {
       method: "POST",
       mode: "no-cors",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+      body: JSON.stringify(payload)
     });
-    shfaqMsg("✅ Raporti u dërgua me sukses në Google Sheets!", "success");
-  } catch (err) {
-    shfaqMsg("✅ Raporti u ruajt (do të sinkronizohet)!", "success");
-  }
+  } catch(e) { console.log("Sheets error:", e); }
 
-  // Pastro formen
+  // 2. Dergo email me EmailJS
+  try {
+    await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+      kategoria,
+      vendndodhja,
+      rrethi,
+      prioriteti,
+      pershkrimi,
+      data
+    });
+  } catch(e) { console.log("EmailJS error:", e); }
+
+  // 3. Ruaj lokalisht
+  raportet.unshift(payload);
+  localStorage.setItem("raportet", JSON.stringify(raportet));
+
+  shfaqMsg("✅ Raporti u dërgua! Email njoftimi u dërgua.", "success");
+
   document.getElementById("kategoria").value = "";
   document.getElementById("rrethi").value = "";
   document.getElementById("vendndodhja").value = "";
@@ -203,7 +201,7 @@ function shfaqRaportet() {
       <p>📍 ${r.vendndodhja} — ${r.rrethi}</p>
       <p>📅 ${r.data}</p>
       <p>${r.pershkrimi}</p>
-      <span class="badge ${r.prioriteti === 'I lartë' ? 'i-larte' : r.prioriteti === 'Mesatar' ? 'mesatar' : 'i-ulet'}">${r.prioriteti}</span>
+      <span class="badge ${r.prioriteti==='I lartë'?'i-larte':r.prioriteti==='Mesatar'?'mesatar':'i-ulet'}">${r.prioriteti}</span>
     </div>
   `).join("");
 }
@@ -212,7 +210,7 @@ function shfaqMsg(txt, tip) {
   const el = document.getElementById("msgBox");
   el.textContent = txt;
   el.className = "msg " + tip;
-  setTimeout(() => el.className = "msg", 4000);
+  setTimeout(() => el.className = "msg", 5000);
 }
 </script>
 </body>
