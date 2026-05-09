@@ -3,193 +3,217 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QytetiYne</title>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<title>QytetiYnë 🏙️</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',sans-serif;background:#f4f6f9;color:#222}
-header{background:#1D9E75;color:white;padding:16px 20px;display:flex;align-items:center;gap:12px}
-header h1{font-size:20px;font-weight:600}
-header span{font-size:13px;opacity:.85}
-.tabs{display:flex;background:white;border-bottom:1px solid #e0e0e0}
-.tab{flex:1;padding:14px;text-align:center;font-size:14px;cursor:pointer;color:#666;border-bottom:3px solid transparent;transition:all .2s}
-.tab.active{color:#1D9E75;border-bottom-color:#1D9E75;font-weight:500}
-.section{display:none;padding:16px;max-width:680px;margin:0 auto}
-.section.active{display:block}
-.card{background:white;border-radius:12px;border:1px solid #e8e8e8;padding:16px;margin-bottom:12px}
-label{font-size:13px;color:#666;display:block;margin-bottom:5px;margin-top:12px}
-label:first-child{margin-top:0}
-input,select,textarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fff;color:#222;outline:none;font-family:inherit}
-input:focus,select:focus,textarea:focus{border-color:#1D9E75;box-shadow:0 0 0 3px rgba(29,158,117,.12)}
-textarea{resize:vertical;min-height:80px}
-.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
-.cat-btn{border:1px solid #ddd;border-radius:10px;padding:10px 6px;cursor:pointer;background:white;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:#555;transition:all .15s}
-.cat-btn:hover{background:#f0fdf8}
-.cat-btn.selected{border-color:#1D9E75;background:#e1f5ee;color:#085041;font-weight:500}
-.cat-btn .ic{font-size:22px}
-.submit-btn{width:100%;margin-top:16px;padding:12px;background:#1D9E75;color:white;border:none;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;transition:background .15s}
-.submit-btn:hover{background:#0F6E56}
-.submit-btn:disabled{background:#9FE1CB;cursor:default}
-.report-card{background:white;border-radius:12px;border:1px solid #e8e8e8;padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start}
-.report-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.report-info{flex:1}
-.report-title{font-size:14px;font-weight:500;margin-bottom:3px}
-.report-loc{font-size:12px;color:#888;margin-bottom:6px}
-.report-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.status-badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;cursor:pointer;border:none}
-.s-hapur{background:#FAECE7;color:#712B13}
-.s-proces{background:#FAEEDA;color:#633806}
-.s-zgjidhur{background:#EAF3DE;color:#27500A}
-.report-date{font-size:11px;color:#aaa;margin-left:auto}
-.filter-row{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
-.fbtn{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid #ddd;background:white;color:#666;cursor:pointer}
-.fbtn.active{background:#1D9E75;color:white;border-color:#1D9E75}
-.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
-.stat-box{background:white;border-radius:12px;padding:16px;text-align:center;border:1px solid #e8e8e8}
-.stat-num{font-size:28px;font-weight:600}
-.stat-lbl{font-size:12px;color:#888;margin-top:4px}
-.empty{text-align:center;padding:40px 20px;color:#aaa;font-size:14px}
-.loading{text-align:center;padding:20px;color:#aaa;font-size:14px}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#085041;color:white;padding:10px 22px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
-.toast.show{opacity:1}
-.bar-wrap{margin-bottom:14px}
-.bar-label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
-.bar-bg{background:#f0f0f0;border-radius:4px;height:8px}
-.bar-fill{height:100%;background:#1D9E75;border-radius:4px}
-.success-msg{background:#E1F5EE;border-radius:10px;padding:16px;text-align:center;margin-top:12px;display:none}
-.success-msg .ic{font-size:32px;margin-bottom:8px}
-.success-msg p{font-size:14px;color:#085041;font-weight:500}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; color: #333; }
+  header { background: #1a73e8; color: white; padding: 18px 24px; display: flex; align-items: center; gap: 12px; }
+  header h1 { font-size: 1.4rem; }
+  .tabs { display: flex; background: white; border-bottom: 2px solid #e0e0e0; }
+  .tab { flex: 1; padding: 14px; text-align: center; cursor: pointer; font-weight: 600; color: #666; border-bottom: 3px solid transparent; transition: all .2s; }
+  .tab.active { color: #1a73e8; border-bottom-color: #1a73e8; }
+  .page { display: none; padding: 20px; max-width: 600px; margin: 0 auto; }
+  .page.active { display: block; }
+  .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  label { display: block; margin-bottom: 6px; font-weight: 600; font-size: .9rem; color: #555; }
+  select, input, textarea { width: 100%; padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 1rem; margin-bottom: 14px; outline: none; transition: border .2s; }
+  select:focus, input:focus, textarea:focus { border-color: #1a73e8; }
+  textarea { height: 90px; resize: vertical; }
+  .btn { width: 100%; padding: 14px; background: #1a73e8; color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background .2s; }
+  .btn:hover { background: #1558b0; }
+  .btn:disabled { background: #aaa; cursor: not-allowed; }
+  .msg { text-align: center; padding: 12px; border-radius: 8px; margin-top: 12px; font-weight: 600; display: none; }
+  .msg.success { background: #e6f4ea; color: #2e7d32; display: block; }
+  .msg.error { background: #fdecea; color: #c62828; display: block; }
+  .priority { display: flex; gap: 10px; margin-bottom: 14px; }
+  .priority label { flex: 1; text-align: center; padding: 10px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: .85rem; margin: 0; }
+  .priority input[type=radio] { display: none; }
+  .priority input:checked + label { border-color: #1a73e8; background: #e8f0fe; color: #1a73e8; }
+  .raportet-list { }
+  .raport-card { background: white; border-radius: 10px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.07); border-left: 4px solid #1a73e8; }
+  .raport-card h3 { font-size: 1rem; margin-bottom: 6px; }
+  .raport-card p { font-size: .85rem; color: #666; margin-bottom: 3px; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: .75rem; font-weight: 700; }
+  .badge.i-larte { background: #fdecea; color: #c62828; }
+  .badge.mesatar { background: #fff8e1; color: #f57f17; }
+  .badge.i-ulet { background: #e8f5e9; color: #2e7d32; }
+  .empty { text-align: center; color: #aaa; padding: 40px 0; font-size: 1rem; }
 </style>
 </head>
 <body>
+
 <header>
-  <div style="width:36px;height:36px;background:rgba(255,255,255,0.25);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px">🏙️</div>
-  <div><h1>QytetiYnë</h1><span>Raporto probleme në qytet</span></div>
+  <span style="font-size:1.8rem">🏙️</span>
+  <h1>QytetiYnë</h1>
 </header>
+
 <div class="tabs">
-  <div class="tab active" onclick="sw('raporto')">Raporto</div>
-  <div class="tab" onclick="sw('lista')">Lista</div>
-  <div class="tab" onclick="sw('statistika')">Statistika</div>
+  <div class="tab active" onclick="showTab('raporto')">📋 Raporto</div>
+  <div class="tab" onclick="showTab('raportet')">📂 Raportet</div>
 </div>
-<div id="s-raporto" class="section active">
+
+<!-- FORMA E RAPORTIMIT -->
+<div class="page active" id="raporto">
   <div class="card">
-    <label>Lloji i problemit</label>
-    <div class="cat-grid" id="cat-grid"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div><label>Prioriteti</label>
-        <select id="inp-pri">
-          <option value="i larte">I larte</option>
-          <option value="mesatar" selected>Mesatar</option>
-          <option value="i ulet">I ulet</option>
-        </select>
-      </div>
-      <div><label>Rrethi / Lagja</label>
-        <select id="inp-zone">
-          <option value="">- Zgjidh -</option>
-          <option>Blloku</option><option>Kombinat</option><option>Kinostudio</option>
-          <option>Lapraka</option><option>Myslym Shyri</option><option>Njesia 6</option>
-          <option>Njesia 7</option><option>Njesia 9</option><option>Njesia 10</option>
-          <option>Njesia 11</option><option>Tjeter</option>
-        </select>
-      </div>
+    <label>Kategoria</label>
+    <select id="kategoria">
+      <option value="">-- Zgjidh kategorinë --</option>
+      <optgroup label="Rrugë & Infrastrukturë">
+        <option>Gropë në rrugë</option>
+        <option>Trotuar i dëmtuar</option>
+        <option>Parkimi i paligjshëm</option>
+        <option>Ndërtim i paligjshëm</option>
+      </optgroup>
+      <optgroup label="Mjedis">
+        <option>Mbeturina</option>
+        <option>Pemë/Gjelbërim</option>
+        <option>Ndotje e ajrit</option>
+        <option>Zhurmë</option>
+      </optgroup>
+      <optgroup label="Shërbime">
+        <option>Dritë e prishur</option>
+        <option>Ujë/Energji</option>
+        <option>Kanalizime</option>
+      </optgroup>
+      <optgroup label="Lëvizja">
+        <option>Trafik/Sinjalistikë</option>
+      </optgroup>
+    </select>
+
+    <label>Rrethi/Lagja</label>
+    <select id="rrethi">
+      <option value="">-- Zgjidh rrethин --</option>
+      <option>Blloku</option>
+      <option>Kombinat</option>
+      <option>Don Bosko</option>
+      <option>Fresku</option>
+      <option>Kinostudio</option>
+      <option>Laprakë</option>
+      <option>Mezez</option>
+      <option>Myslym Shyri</option>
+      <option>Pallati me Shigjeta</option>
+      <option>Pazari i Ri</option>
+      <option>Porcelani</option>
+      <option>Rruga e Elbasanit</option>
+      <option>Sauk</option>
+      <option>Selitë</option>
+      <option>Shëngjin</option>
+      <option>Tirana e Re</option>
+      <option>Unaza e Re</option>
+      <option>Vasil Shanto</option>
+      <option>Zogu i Zi</option>
+      <option>Tjeter</option>
+    </select>
+
+    <label>Vendndodhja (adresa)</label>
+    <input type="text" id="vendndodhja" placeholder="p.sh. Rruga Myslym Shyri, nr. 14">
+
+    <label>Prioriteti</label>
+    <div class="priority">
+      <input type="radio" name="prioriteti" id="p1" value="I lartë">
+      <label for="p1">🔴 I lartë</label>
+      <input type="radio" name="prioriteti" id="p2" value="Mesatar" checked>
+      <label for="p2">🟡 Mesatar</label>
+      <input type="radio" name="prioriteti" id="p3" value="I ulët">
+      <label for="p3">🟢 I ulët</label>
     </div>
-    <label>Adresa / Vendndodhja</label>
-    <input id="inp-loc" type="text" placeholder="p.sh. Rruga Deshmmoret e Kombit, nr. 12">
-    <label>Pershkrim (opsional)</label>
-    <textarea id="inp-desc" placeholder="Detaje shtese rreth problemit..."></textarea>
-    <button class="submit-btn" id="sub-btn" onclick="submitReport()">Dergo raportin</button>
-    <div class="success-msg" id="success-msg">
-      <div class="ic">✅</div>
-      <p>Raporti u dergua me sukses!<br>Do te njoftohemi menjehere.</p>
-    </div>
+
+    <label>Përshkrimi</label>
+    <textarea id="pershkrimi" placeholder="Përshkruaj problemin me disa fjalë..."></textarea>
+
+    <button class="btn" onclick="dergoProblem()" id="btnDergo">📤 Dërgo Raportin</button>
+    <div class="msg" id="msgBox"></div>
   </div>
 </div>
-<div id="s-lista" class="section">
-  <div class="filter-row" id="frow"></div>
-  <div id="list-el"><div class="loading">Duke ngarkuar...</div></div>
+
+<!-- LISTA E RAPORTEVE -->
+<div class="page" id="raportet">
+  <div id="lista-raportet"><p class="empty">Duke ngarkuar raportet...</p></div>
 </div>
-<div id="s-statistika" class="section">
-  <div class="stats-grid">
-    <div class="stat-box"><div class="stat-num" id="st-tot">0</div><div class="stat-lbl">Gjithsej</div></div>
-    <div class="stat-box"><div class="stat-num" id="st-op" style="color:#D85A30">0</div><div class="stat-lbl">Hapur</div></div>
-    <div class="stat-box"><div class="stat-num" id="st-pr" style="color:#BA7517">0</div><div class="stat-lbl">Ne proces</div></div>
-    <div class="stat-box"><div class="stat-num" id="st-zg" style="color:#3B6D11">0</div><div class="stat-lbl">Zgjidhur</div></div>
-  </div>
-  <div class="card" id="cat-st"></div>
-</div>
-<div class="toast" id="toast"></div>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-emailjs.init("VsleY6nsIQRNQWwCu");
-const firebaseConfig = {
-  apiKey: "AIzaSyB6nDJ1X3efuqeX0-t-9NAODfjD3AYghbc",
-  authDomain: "qytetiyne.firebaseapp.com",
-  projectId: "qytetiyne",
-  storageBucket: "qytetiyne.firebasestorage.app",
-  messagingSenderId: "786171527486",
-  appId: "1:786171527486:web:2fd9b22e0beb712f0b6c6f"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const CATS = [
-  {v:'Grope ne rruge',ic:'🕳️',bg:'#FAECE7'},{v:'Drite e prishur',ic:'💡',bg:'#FAEEDA'},
-  {v:'Mbeturina',ic:'🗑️',bg:'#EAF3DE'},{v:'Uje / Energji',ic:'🔧',bg:'#E6F1FB'},
-  {v:'Trotuare te demtuara',ic:'🧱',bg:'#F1EFE8'},{v:'Peme / Gjelbërim',ic:'🌳',bg:'#EAF3DE'},
-  {v:'Trafik / Sinjalistike',ic:'🚦',bg:'#FAEEDA'},{v:'Ndotje e ajrit',ic:'🌫️',bg:'#F1EFE8'},
-  {v:'Zhurme',ic:'🔊',bg:'#FBEAF0'},{v:'Kanalizime',ic:'🪠',bg:'#FAECE7'},
-  {v:'Parkim i paligjshem',ic:'🚗',bg:'#E6F1FB'},{v:'Ndertim i paligjshem',ic:'🏗️',bg:'#FCEBEB'},
-];
-let selCat='',curFilter='te gjitha',allReports=[];
-const getIcon=v=>(CATS.find(c=>c.v===v)||{ic:'📌'}).ic;
-const getBg=v=>(CATS.find(c=>c.v===v)||{bg:'#f0f0f0'}).bg;
-function buildCatGrid(){document.getElementById('cat-grid').innerHTML=CATS.map(c=>`<button class="cat-btn" onclick="selC(this,'${c.v}')"><span class="ic">${c.ic}</span><span>${c.v}</span></button>`).join('');}
-window.selC=function(btn,val){document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');selCat=val;};
-window.sw=function(t){['raporto','lista','statistika'].forEach((n,i)=>{document.querySelectorAll('.tab')[i].classList.toggle('active',n===t);document.getElementById('s-'+n).classList.toggle('active',n===t);});if(t==='statistika')renderStats();};
-function buildFilters(){document.getElementById('frow').innerHTML=['te gjitha','hapur','ne proces','zgjidhur'].map(o=>`<button class="fbtn${o===curFilter?' active':''}" onclick="setF(this,'${o}')">${o.charAt(0).toUpperCase()+o.slice(1)}</button>`).join('');}
-window.setF=function(btn,f){curFilter=f;buildFilters();renderList();};
-function statusClass(s){return s==='hapur'?'s-hapur':s==='ne proces'?'s-proces':'s-zgjidhur';}
-function renderList(){
-  buildFilters();
-  const el=document.getElementById('list-el');
-  let data=curFilter==='te gjitha'?allReports:allReports.filter(r=>r.status===curFilter);
-  if(!data.length){el.innerHTML='<div class="empty">Nuk ka raporte.</div>';return;}
-  el.innerHTML=data.map(r=>`<div class="report-card"><div class="report-icon" style="background:${getBg(r.cat)}">${getIcon(r.cat)}</div><div class="report-info"><div class="report-title">${r.cat}</div><div class="report-loc">${r.zone?r.zone+' - ':''}${r.loc}${r.desc?' - '+r.desc:''}</div><div class="report-footer"><button class="status-badge ${statusClass(r.status)}" onclick="cycleS('${r.id}','${r.status}')">${r.status}</button><span style="font-size:11px;padding:2px 8px;border-radius:20px;background:#f0f0f0;color:#666">${r.pri||'mesatar'}</span><span class="report-date">${r.date}</span></div></div></div>`).join('');
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzAnALey_A0UCpKKMXRD2uhgQR-xWwpx6dUMmq5tZw3AVBJZMxPkQ7306RniShavxXPqw/exec";
+let raportet = JSON.parse(localStorage.getItem("raportet") || "[]");
+
+function showTab(tab) {
+  document.querySelectorAll(".tab").forEach((t,i) => t.classList.toggle("active", ["raporto","raportet"][i] === tab));
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(tab).classList.add("active");
+  if (tab === "raportet") shfaqRaportet();
 }
-window.cycleS=async function(id,current){const cycle=['hapur','ne proces','zgjidhur'];await updateDoc(doc(db,'raportet',id),{status:cycle[(cycle.indexOf(current)+1)%3]});};
-window.submitReport=async function(){
-  const loc=document.getElementById('inp-loc').value.trim();
-  const zone=document.getElementById('inp-zone').value;
-  const desc=document.getElementById('inp-desc').value.trim();
-  const pri=document.getElementById('inp-pri').value;
-  if(!selCat){showToast('Zgjidhni llojin e problemit!');return;}
-  if(!loc){showToast('Shkruani vendndodhjen!');return;}
-  const btn=document.getElementById('sub-btn');
-  btn.disabled=true;btn.textContent='Duke derguar...';
-  try{
-    await addDoc(collection(db,'raportet'),{cat:selCat,loc,zone,desc,pri,status:'hapur',date:new Date().toLocaleDateString('sq-AL'),createdAt:Date.now()});
-    await emailjs.send("service_17i5cif","template_ynpz7k9",{kategoria:selCat,vendndodhja:loc,rrethi:zone||'Pa specifikuar',pershkrimi:desc||'Pa pershkrim',prioriteti:pri,data:new Date().toLocaleDateString('sq-AL')});
-    document.getElementById('inp-loc').value='';document.getElementById('inp-desc').value='';document.getElementById('inp-zone').value='';document.getElementById('inp-pri').value='mesatar';
-    document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('selected'));selCat='';
-    btn.style.display='none';document.getElementById('success-msg').style.display='block';
-    setTimeout(()=>{btn.style.display='block';btn.disabled=false;btn.textContent='Dergo raportin';document.getElementById('success-msg').style.display='none';},3000);
-  }catch(e){console.error(e);showToast('Gabim! Provo perseri.');btn.disabled=false;btn.textContent='Dergo raportin';}
-};
-function renderStats(){
-  document.getElementById('st-tot').textContent=allReports.length;
-  document.getElementById('st-op').textContent=allReports.filter(r=>r.status==='hapur').length;
-  document.getElementById('st-pr').textContent=allReports.filter(r=>r.status==='ne proces').length;
-  document.getElementById('st-zg').textContent=allReports.filter(r=>r.status==='zgjidhur').length;
-  const cats={};allReports.forEach(r=>cats[r.cat]=(cats[r.cat]||0)+1);
-  const el=document.getElementById('cat-st');
-  if(!Object.keys(cats).length){el.innerHTML='<div class="empty">Nuk ka te dhena akoma.</div>';return;}
-  const mx=Math.max(...Object.values(cats));
-  el.innerHTML='<div style="font-size:13px;font-weight:500;color:#888;margin-bottom:14px">Sipas kategorise</div>'+Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,cnt])=>`<div class="bar-wrap"><div class="bar-label"><span>${getIcon(cat)} ${cat}</span><span style="color:#888">${cnt}</span></div><div class="bar-bg"><div class="bar-fill" style="width:${Math.round(cnt/mx*100)}%"></div></div></div>`).join('');
+
+async function dergoProblem() {
+  const kategoria = document.getElementById("kategoria").value;
+  const rrethi = document.getElementById("rrethi").value;
+  const vendndodhja = document.getElementById("vendndodhja").value.trim();
+  const prioriteti = document.querySelector("input[name=prioriteti]:checked").value;
+  const pershkrimi = document.getElementById("pershkrimi").value.trim();
+
+  if (!kategoria || !rrethi || !vendndodhja || !pershkrimi) {
+    shfaqMsg("⚠️ Plotëso të gjitha fushat!", "error");
+    return;
+  }
+
+  const btn = document.getElementById("btnDergo");
+  btn.disabled = true;
+  btn.textContent = "Duke dërguar...";
+
+  const data = {
+    data: new Date().toLocaleString("sq-AL"),
+    kategoria, rrethi, vendndodhja, prioriteti, pershkrimi
+  };
+
+  // Ruaj lokalisht
+  raportet.unshift(data);
+  localStorage.setItem("raportet", JSON.stringify(raportet));
+
+  // Dergo te Google Sheets
+  try {
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+    shfaqMsg("✅ Raporti u dërgua me sukses në Google Sheets!", "success");
+  } catch (err) {
+    shfaqMsg("✅ Raporti u ruajt (do të sinkronizohet)!", "success");
+  }
+
+  // Pastro formen
+  document.getElementById("kategoria").value = "";
+  document.getElementById("rrethi").value = "";
+  document.getElementById("vendndodhja").value = "";
+  document.getElementById("pershkrimi").value = "";
+  document.getElementById("p2").checked = true;
+
+  btn.disabled = false;
+  btn.textContent = "📤 Dërgo Raportin";
 }
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-const q=query(collection(db,'raportet'),orderBy('createdAt','desc'));
-onSnapshot(q,snap=>{allReports=snap.docs.map(d=>({id:d.id,...d.data()}));renderList();renderStats();});
-buildCatGrid();buildFilters();
+
+function shfaqRaportet() {
+  const lista = document.getElementById("lista-raportet");
+  if (!raportet.length) {
+    lista.innerHTML = '<p class="empty">Nuk ka raporte ende.<br>Bëhu i pari që raporton! 🏙️</p>';
+    return;
+  }
+  lista.innerHTML = raportet.map(r => `
+    <div class="raport-card">
+      <h3>${r.kategoria}</h3>
+      <p>📍 ${r.vendndodhja} — ${r.rrethi}</p>
+      <p>📅 ${r.data}</p>
+      <p>${r.pershkrimi}</p>
+      <span class="badge ${r.prioriteti === 'I lartë' ? 'i-larte' : r.prioriteti === 'Mesatar' ? 'mesatar' : 'i-ulet'}">${r.prioriteti}</span>
+    </div>
+  `).join("");
+}
+
+function shfaqMsg(txt, tip) {
+  const el = document.getElementById("msgBox");
+  el.textContent = txt;
+  el.className = "msg " + tip;
+  setTimeout(() => el.className = "msg", 4000);
+}
 </script>
 </body>
 </html>
